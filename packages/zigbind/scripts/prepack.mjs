@@ -12,6 +12,14 @@ const pkgRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
 const src = join(pkgRoot, "..", "..", "native");
 const dest = join(pkgRoot, "native");
 
+// The compiled CLI must exist — typescript lives at the workspace root, so
+// publish through pnpm or the release workflow (which build first), not bare
+// `npm publish` from this directory.
+if (!existsSync(join(pkgRoot, "dist", "cli.js"))) {
+  console.error("prepack: dist/ is missing — run `pnpm --filter zigbind build` first");
+  process.exit(1);
+}
+
 if (!existsSync(join(src, "build.zig.zon"))) {
   console.error(`prepack: cannot find zigbind sources at ${src}`);
   process.exit(1);

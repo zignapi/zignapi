@@ -6,5 +6,8 @@ zig-out/
 # Release assets produced by scripts/pack-native.mjs
 dist/
 
+# Compiled CLI output
+packages/zigbind/dist/
+
 # Generated at publish time by packages/zigbind/scripts/prepack.mjs
 packages/zigbind/native/

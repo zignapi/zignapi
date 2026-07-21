@@ -17,7 +17,7 @@ Runs "zig build" in the current directory, then copies the resulting shared
 library to ./<name>.node (renaming a plain .dylib/.so/.dll if needed).
 `;
 
-export async function runBuild(argv) {
+export async function runBuild(argv: string[]): Promise<void> {
   const { values } = parseArgs({
     args: argv,
     options: {
@@ -54,12 +54,14 @@ export async function runBuild(argv) {
   process.stdout.write(`✔ built ${basename(dest)}\n`);
 }
 
-/// Find the built addon under zig-out. Prefers an already-named `.node`,
-/// falling back to the first shared library it finds.
-function findAddon(dir) {
-  const nodes = [];
-  const libs = [];
-  const walk = (d) => {
+/**
+ * Find the built addon under zig-out. Prefers an already-named `.node`,
+ * falling back to the first shared library it finds.
+ */
+function findAddon(dir: string): string | null {
+  const nodes: string[] = [];
+  const libs: string[] = [];
+  const walk = (d: string): void => {
     if (!existsSync(d)) return;
     for (const entry of readdirSync(d, { withFileTypes: true })) {
       const p = join(d, entry.name);
@@ -75,8 +77,8 @@ function findAddon(dir) {
   return nodes[0] ?? libs[0] ?? null;
 }
 
-/// The `<name>.node` filename to copy an addon to at the project root.
-function addonName(addon) {
+/** The `<name>.node` filename to copy an addon to at the project root. */
+function addonName(addon: string): string {
   if (extname(addon) === ".node") return basename(addon);
   // libfoo.dylib -> foo.node
   let name = basename(addon, extname(addon));

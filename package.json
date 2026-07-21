@@ -6,5 +6,13 @@
   "engines": {
     "node": ">=18"
   },
-  "packageManager": "pnpm@11.8.0"
+  "packageManager": "pnpm@11.8.0",
+  "scripts": {
+    "build": "tsc -p packages/zigbind",
+    "prepare": "tsc -p packages/zigbind"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "typescript": "^7.0.2"
+  }
 }

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import process from "node:process";
-import { runNew } from "../src/new.js";
-import { runBuild } from "../src/build.js";
+import { runNew } from "./new.js";
+import { runBuild } from "./build.js";
 
 const HELP = `zigbind — write native Node.js addons in Zig
 
@@ -13,7 +13,7 @@ Usage:
 Run "zigbind <command> --help" for command-specific options.
 `;
 
-async function main() {
+async function main(): Promise<void> {
   const [command, ...rest] = process.argv.slice(2);
   switch (command) {
     case "new":
@@ -31,7 +31,8 @@ async function main() {
   }
 }
 
-main().catch((err) => {
-  process.stderr.write(`zigbind: ${err.message}\n`);
+main().catch((err: unknown) => {
+  const message = err instanceof Error ? err.message : String(err);
+  process.stderr.write(`zigbind: ${message}\n`);
   process.exitCode = 1;
 });

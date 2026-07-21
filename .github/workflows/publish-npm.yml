@@ -14,14 +14,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: pnpm
           registry-url: https://registry.npmjs.org
 
-      # `prepack` bundles native/ into the package so an offline `zigbind new`
-      # can still fall back to the local sources.
+      # Compiles the TypeScript CLI to dist/ (root `prepare` runs tsc on install).
+      - name: Install and build
+        run: pnpm install --frozen-lockfile
+
+      # `prepack` verifies dist/ exists and bundles native/ as the offline fallback.
       - name: Publish
         working-directory: packages/zigbind
         env:
