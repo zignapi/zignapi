@@ -31,7 +31,7 @@ pub fn classify(comptime T: type) Kind {
 /// Compile-time guard that fails with a readable message for unsupported types.
 fn assertSupported(comptime T: type) void {
     if (classify(T) == .unsupported) {
-        @compileError("zigbind: unsupported type '" ++ @typeName(T) ++
+        @compileError("zignapi: unsupported type '" ++ @typeName(T) ++
             "' (supported: integers, floats, bool, []const u8)");
     }
 }

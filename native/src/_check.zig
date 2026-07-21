@@ -1,13 +1,13 @@
 //! Build-only compile check (never shipped to consumers, not imported by
-//! `zigbind.zig`). Building this as an *object* forces the whole comptime
+//! `zignapi.zig`). Building this as an *object* forces the whole comptime
 //! pipeline — `register` → the per-function callback trampolines → `convert`
 //! for every supported type, including an error union — to be analyzed, so
 //! `zig build` in `native/` fails loudly on any API or type mistake. The
 //! N-API symbols it references stay undefined in the object file; they are
 //! resolved when a real addon links, exactly as in production.
 
-const zigbind = @import("zigbind.zig");
-const napi = zigbind.napi;
+const zignapi = @import("zignapi.zig");
+const napi = zignapi.napi;
 
 // Reference the concrete (non-generic) wrappers so they are compiled too.
 comptime {
@@ -35,7 +35,7 @@ fn checked(x: i32) !i32 {
 }
 
 comptime {
-    zigbind.register(.{
+    zignapi.register(.{
         .add = add,
         .negate = negate,
         .scale = scale,

@@ -1,20 +1,20 @@
-# zigbind
+# zignapi
 
 Write native Node.js addons in [Zig](https://ziglang.org/) — the Zig equivalent of
 [napi-rs](https://napi.rs/) for Rust.
 
-You write plain Zig functions, register them with one comptime call, and `zigbind`
+You write plain Zig functions, register them with one comptime call, and `zignapi`
 produces a `.node` addon that Node can `require()` directly. No `node-gyp`, no C glue.
 
 ```zig
-const zigbind = @import("zigbind");
+const zignapi = @import("zignapi");
 
 pub fn add(a: i32, b: i32) i32 {
     return a + b;
 }
 
 comptime {
-    zigbind.register(.{ .add = add });
+    zignapi.register(.{ .add = add });
 }
 ```
 
@@ -35,11 +35,11 @@ console.log(addon.add(2, 3)); // 5
 ## Layout
 
 ```
-zigbind/
+zignapi/
 ├── native/                 # the Zig library (a Zig package, NOT an npm package)
-│   ├── src/                # zigbind.zig, napi.zig, convert.zig, async.zig, register.zig
+│   ├── src/                # zignapi.zig, napi.zig, convert.zig, async.zig, register.zig
 │   └── vendor/             # vendored N-API headers (node-api-headers)
-├── packages/zigbind/       # the CLI (npm package `zignapi`, command `zignapi`)
+├── packages/zignapi/       # the CLI (npm package `zignapi`, command `zignapi`)
 └── playground/             # example addon exercising the whole pipeline
 ```
 
@@ -68,22 +68,21 @@ Async support (`native/src/async.zig`) is a stub for now — see the TODO there.
 
 ## Scaffolding a project (`zignapi new`)
 
-The CLI is published to npm as **`zignapi`** (the name `zigbind` was too close to
-an existing package) and installs the `zignapi` command:
+The CLI is published to npm as **`zignapi`** and installs the `zignapi` command:
 
 ```sh
 npm install -g zignapi
 zignapi new my-addon
 ```
 
-`zignapi new <name>` creates a project and wires the `zigbind` Zig module into
+`zignapi new <name>` creates a project and wires the `zignapi` Zig module into
 its `build.zig.zon` with `zig fetch --save`, pinning it by content hash. By
 default it fetches the **hosted release tarball**
-(`https://github.com/zigbind/zigbind/releases/download/v<version>/zigbind-<version>.tar.gz`),
+(`https://github.com/zignapi/zignapi/releases/download/v<version>/zignapi-<version>.tar.gz`),
 so a scaffolded project is portable across machines and CI. If that URL is
 unreachable — or you pass `--local` — it falls back to the Zig sources bundled
 with the CLI (or `../../native` in this checkout). Override the URL with
-`ZIGBIND_RELEASE_URL` (handy for a mirror or a local `file://` tarball).
+`ZIGNAPI_RELEASE_URL` (handy for a mirror or a local `file://` tarball).
 
 The `playground/` deliberately keeps a plain `.path = "../native"` dependency
 instead: it's the in-repo dev harness, so it should track edits to `native/`
@@ -95,13 +94,13 @@ The Zig library is distributed as a GitHub **release asset** — a tarball whose
 root is the `native/` package (so `build.zig.zon` sits at the tarball root,
 which is what `zig fetch` requires).
 
-1. Bump `.version` in `native/build.zig.zon` **and** `packages/zigbind/package.json`
+1. Bump `.version` in `native/build.zig.zon` **and** `packages/zignapi/package.json`
    to the same value.
 2. Tag and push: `git tag v0.1.0 && git push --tags`.
-3. `.github/workflows/release.yml` builds `dist/zigbind-<version>.tar.gz`
+3. `.github/workflows/release.yml` builds `dist/zignapi-<version>.tar.gz`
    (`node scripts/pack-native.mjs`) and uploads it to the release.
 4. Publish the CLI to npm (the `Publish CLI to npm` workflow, or `npm publish`
-   from `packages/zigbind` — `prepack` bundles `native/` as the offline fallback).
+   from `packages/zignapi` — `prepack` bundles `native/` as the offline fallback).
 
 > A published release asset is immutable: never re-upload it for the same tag,
 > or the pinned `hash` in downstream projects will stop matching.

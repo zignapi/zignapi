@@ -1,9 +1,9 @@
 const std = @import("std");
 
-/// Build script for the `zigbind` Zig library.
+/// Build script for the `zignapi` Zig library.
 ///
 /// This is a Zig package, not an npm package. Its main product is the Zig
-/// module named "zigbind" (exposed via `b.addModule`), which addons import to
+/// module named "zignapi" (exposed via `b.addModule`), which addons import to
 /// register their functions with Node. Building here also runs two local
 /// checks so `zig build` in this directory validates the library on its own:
 ///
@@ -16,12 +16,12 @@ pub fn build(b: *std.Build) void {
 
     const headers = b.path("vendor/node-api-headers");
 
-    // The module consumers import as `@import("zigbind")`. It links libc (for
+    // The module consumers import as `@import("zignapi")`. It links libc (for
     // the C allocator used to marshal string arguments, and to make the N-API
     // headers available to `@cImport`). Target/optimize are left unset here so
     // each consumer picks them; the include path travels with the module.
-    const mod = b.addModule("zigbind", .{
-        .root_source_file = b.path("src/zigbind.zig"),
+    const mod = b.addModule("zignapi", .{
+        .root_source_file = b.path("src/zignapi.zig"),
         .link_libc = true,
     });
     mod.addIncludePath(headers);
@@ -37,7 +37,7 @@ pub fn build(b: *std.Build) void {
     });
     check_mod.addIncludePath(headers);
     const check_obj = b.addObject(.{
-        .name = "zigbind-check",
+        .name = "zignapi-check",
         .root_module = check_mod,
     });
     b.getInstallStep().dependOn(&check_obj.step);
@@ -53,6 +53,6 @@ pub fn build(b: *std.Build) void {
     tests_mod.addIncludePath(headers);
     const unit_tests = b.addTest(.{ .root_module = tests_mod });
     const run_tests = b.addRunArtifact(unit_tests);
-    const test_step = b.step("test", "Run zigbind unit tests");
+    const test_step = b.step("test", "Run zignapi unit tests");
     test_step.dependOn(&run_tests.step);
 }

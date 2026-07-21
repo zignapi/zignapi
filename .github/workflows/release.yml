@@ -1,7 +1,7 @@
 name: Release
 
 # Cut a release by pushing a tag like `v0.1.0`. Keep the tag version in sync
-# with `.version` in native/build.zig.zon and packages/zigbind/package.json.
+# with `.version` in native/build.zig.zon and packages/zignapi/package.json.
 on:
   push:
     tags:
@@ -21,7 +21,7 @@ jobs:
         with:
           node-version: 22
 
-      # Build the zigbind Zig package tarball (root = build.zig.zon), which is
+      # Build the zignapi Zig package tarball (root = build.zig.zon), which is
       # what `zignapi new` fetches via `zig fetch --save`.
       - name: Pack native sources
         run: node scripts/pack-native.mjs
@@ -34,17 +34,17 @@ jobs:
             exit 1
           fi
 
-      # Uploads dist/zigbind-<version>.tar.gz as a release asset. This asset is
+      # Uploads dist/zignapi-<version>.tar.gz as a release asset. This asset is
       # immutable once published — never re-upload for the same tag, or pinned
       # dependency hashes in downstream projects will break.
       - name: Create GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release create "${GITHUB_REF_NAME}" dist/zigbind-*.tar.gz --generate-notes
+        run: gh release create "${GITHUB_REF_NAME}" dist/zignapi-*.tar.gz --generate-notes
 
   # Publish the CLI to npm *after* the release asset exists, so the published
   # CLI's default release URL resolves. Requires an NPM_TOKEN secret (an npm
-  # "Automation" token, which bypasses 2FA) with publish rights to `zigbind`.
+  # "Automation" token, which bypasses 2FA) with publish rights to `zignapi`.
   publish-npm:
     needs: release
     runs-on: ubuntu-latest
@@ -68,7 +68,7 @@ jobs:
 
       # `prepack` verifies dist/ exists and bundles native/ as the offline fallback.
       - name: Publish
-        working-directory: packages/zigbind
+        working-directory: packages/zignapi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --access public

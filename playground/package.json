@@ -2,7 +2,7 @@
   "name": "playground",
   "version": "0.0.0",
   "private": true,
-  "description": "Example zigbind addon exercising the full build/test pipeline",
+  "description": "Example zignapi addon exercising the full build/test pipeline",
   "scripts": {
     "build": "zignapi build",
     "test": "node --test"

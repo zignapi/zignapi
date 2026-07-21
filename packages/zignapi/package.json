@@ -8,13 +8,13 @@
     "node-api",
     "native",
     "addon",
-    "zigbind"
+    "zignapi"
   ],
-  "homepage": "https://github.com/zigbind/zigbind",
+  "homepage": "https://github.com/zignapi/zignapi",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zigbind/zigbind.git",
-    "directory": "packages/zigbind"
+    "url": "git+https://github.com/zignapi/zignapi.git",
+    "directory": "packages/zignapi"
   },
   "type": "module",
   "bin": {

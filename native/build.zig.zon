@@ -1,7 +1,7 @@
 .{
-    .name = .zigbind,
+    .name = .zignapi,
     .version = "0.1.0",
-    .fingerprint = 0xb615899b08c4e528, // Changing this has security and trust implications.
+    .fingerprint = 0x582024f92c57df77, // Changing this has security and trust implications.
     .minimum_zig_version = "0.16.0",
     .dependencies = .{},
     .paths = .{

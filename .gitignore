@@ -7,7 +7,7 @@ zig-out/
 dist/
 
 # Compiled CLI output
-packages/zigbind/dist/
+packages/zignapi/dist/
 
-# Generated at publish time by packages/zigbind/scripts/prepack.mjs
+# Generated at publish time by packages/zignapi/scripts/prepack.mjs
 native/

@@ -9,7 +9,7 @@ import {
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import process from "node:process";
-import { releaseUrl, resolveZigbindSources, runZig } from "./zig.js";
+import { releaseUrl, resolveZignapiSources, runZig } from "./zig.js";
 
 // The template tree lives at the package root (as `templates/`), so it resolves
 // the same whether we run from the compiled `dist/` or the source `src/`.
@@ -26,7 +26,7 @@ Usage:
   zignapi new <name> [--local]
 
 Creates ./<name> from the built-in template, substituting the project name,
-then wires up the zigbind Zig dependency with "zig fetch --save" (pinned by
+then wires up the zignapi Zig dependency with "zig fetch --save" (pinned by
 content hash). By default it fetches the hosted release tarball, so the project
 is portable across machines/CI; if that's unreachable it falls back to the Zig
 sources bundled with the CLI.
@@ -63,7 +63,7 @@ export async function runNew(argv: string[]): Promise<void> {
   }
 
   copyTemplate(TEMPLATES_DIR, target, name);
-  addZigbindDependency(target, { local: values.local ?? false });
+  addZignapiDependency(target, { local: values.local ?? false });
 
   process.stdout.write(
     `✔ created ${name}/\n\n` +
@@ -75,24 +75,24 @@ export async function runNew(argv: string[]): Promise<void> {
 }
 
 /**
- * Add the `zigbind` Zig dependency to the freshly scaffolded project via
+ * Add the `zignapi` Zig dependency to the freshly scaffolded project via
  * `zig fetch --save`, pinning it by content hash. Prefers the hosted release
  * tarball (portable across machines) and falls back to the Zig sources bundled
  * with the CLI if that's unreachable or `local` is set. Non-fatal: if Zig isn't
  * available at all, tell the user how to finish the wiring later.
  */
-function addZigbindDependency(target: string, { local }: { local: boolean }): void {
+function addZignapiDependency(target: string, { local }: { local: boolean }): void {
   const repairZon = join(target, "build.zig.zon");
 
   if (!local) {
     const url = releaseUrl();
     try {
-      runZig(target, ["fetch", "--save=zigbind", url], { repairZon });
-      process.stdout.write(`✔ added zigbind dependency from ${url}\n`);
+      runZig(target, ["fetch", "--save=zignapi", url], { repairZon });
+      process.stdout.write(`✔ added zignapi dependency from ${url}\n`);
       return;
     } catch (err) {
       process.stderr.write(
-        `note: could not fetch the hosted zigbind release (${errMessage(err)}); ` +
+        `note: could not fetch the hosted zignapi release (${errMessage(err)}); ` +
           `falling back to the bundled sources.\n`,
       );
     }
@@ -100,14 +100,14 @@ function addZigbindDependency(target: string, { local }: { local: boolean }): vo
 
   let sources: string | undefined;
   try {
-    sources = resolveZigbindSources();
-    runZig(target, ["fetch", "--save=zigbind", sources], { repairZon });
-    process.stdout.write("✔ added zigbind dependency from bundled sources\n");
+    sources = resolveZignapiSources();
+    runZig(target, ["fetch", "--save=zignapi", sources], { repairZon });
+    process.stdout.write("✔ added zignapi dependency from bundled sources\n");
   } catch (err) {
     process.stderr.write(
-      `warning: could not add the zigbind dependency automatically ` +
+      `warning: could not add the zignapi dependency automatically ` +
         `(${errMessage(err)}).\nRun this inside the project once Zig 0.16.0 is ` +
-        `available:\n  zig fetch --save=zigbind ${sources ?? releaseUrl()}\n`,
+        `available:\n  zig fetch --save=zignapi ${sources ?? releaseUrl()}\n`,
     );
   }
 }

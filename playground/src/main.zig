@@ -1,4 +1,4 @@
-const zigbind = @import("zigbind");
+const zignapi = @import("zignapi");
 
 /// Exposed to JS as `addon.add(a, b)`.
 pub fn add(a: i32, b: i32) i32 {
@@ -8,7 +8,7 @@ pub fn add(a: i32, b: i32) i32 {
 // Emits `napi_register_module_v1`, the entry point Node calls when it loads the
 // `.node` file. Each field becomes a property on the addon's `exports`.
 comptime {
-    zigbind.register(.{
+    zignapi.register(.{
         .add = add,
     });
 }

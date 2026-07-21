@@ -15,13 +15,13 @@ importers:
         specifier: ^7.0.2
         version: 7.0.2
 
-  packages/zigbind: {}
+  packages/zignapi: {}
 
   playground:
     dependencies:
       zignapi:
         specifier: workspace:*
-        version: link:../packages/zigbind
+        version: link:../packages/zignapi
 
 packages:
 

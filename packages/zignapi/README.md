@@ -1,6 +1,6 @@
 # zignapi
 
-The CLI for [zigbind](https://github.com/zigbind/zigbind): scaffold and build
+The CLI for [zignapi](https://github.com/zignapi/zignapi): scaffold and build
 native Node.js addons written in Zig. Written in TypeScript, compiled to ESM with
 **zero runtime dependencies**, no `node-gyp`. Requires **Zig 0.16.0** on `PATH`
 and **Node >= 18**.
@@ -17,7 +17,7 @@ zignapi build [--release]   # run `zig build` in the cwd, emit ./<name>.node
 ```
 
 - `new` copies the template tree (substituting the project name) and pins the
-  `zigbind` Zig dependency with `zig fetch --save`.
+  `zignapi` Zig dependency with `zig fetch --save`.
 - `build` runs `zig build` (adding `-Doptimize=ReleaseFast` with `--release`),
   then copies the produced shared library to `./<name>.node`. If `build.zig.zon`
   is missing a fingerprint, it fills in the value Zig suggests and retries.

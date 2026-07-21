@@ -1,5 +1,5 @@
 {
-  "name": "zigbind-monorepo",
+  "name": "zignapi-monorepo",
   "version": "0.1.0",
   "private": true,
   "description": "Write native Node.js addons in Zig (napi-rs, but for Zig)",
@@ -8,8 +8,8 @@
   },
   "packageManager": "pnpm@11.8.0",
   "scripts": {
-    "build": "tsc -p packages/zigbind",
-    "prepare": "tsc -p packages/zigbind"
+    "build": "tsc -p packages/zignapi",
+    "prepare": "tsc -p packages/zignapi"
   },
   "devDependencies": {
     "@types/node": "^26.1.1",

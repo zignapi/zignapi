@@ -1,7 +1,7 @@
-//! zigbind — write native Node.js addons in Zig.
+//! zignapi — write native Node.js addons in Zig.
 //!
 //! This is the public entry point of the Zig module consumers import with
-//! `@import("zigbind")`. It re-exports the pieces an addon author needs:
+//! `@import("zignapi")`. It re-exports the pieces an addon author needs:
 //!
 //!   - `register` : expose Zig functions to JS and emit `napi_register_module_v1`.
 //!   - `napi`     : the raw N-API bindings and thin wrappers, for escape hatches.

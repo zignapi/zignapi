@@ -4,7 +4,7 @@ name: Publish CLI to npm
 # (the `publish-npm` job in release.yml, on a `v*` tag). Use this to re-run a
 # publish on its own — e.g. if that job failed after the release asset was
 # already uploaded. Requires an NPM_TOKEN secret (an npm "Automation" token,
-# which bypasses 2FA) with publish rights to the `zigbind` package.
+# which bypasses 2FA) with publish rights to the `zignapi` package.
 on:
   workflow_dispatch:
 
@@ -30,7 +30,7 @@ jobs:
 
       # `prepack` verifies dist/ exists and bundles native/ as the offline fallback.
       - name: Publish
-        working-directory: packages/zigbind
+        working-directory: packages/zignapi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --access public

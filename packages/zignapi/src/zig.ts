@@ -15,27 +15,27 @@ export interface RunZigOptions {
 }
 
 /**
- * The hosted release tarball of the zigbind Zig package, used as the default
- * (portable, shareable) dependency source. Overridable via ZIGBIND_RELEASE_URL
+ * The hosted release tarball of the zignapi Zig package, used as the default
+ * (portable, shareable) dependency source. Overridable via ZIGNAPI_RELEASE_URL
  * — handy for testing against a local `file://` tarball or a mirror. The
  * version is taken from this CLI's package.json and must match the release tag.
  */
 export function releaseUrl(): string {
-  const override = process.env.ZIGBIND_RELEASE_URL;
+  const override = process.env.ZIGNAPI_RELEASE_URL;
   if (override) return override;
   const pkg = JSON.parse(readFileSync(join(PKG_ROOT, "package.json"), "utf8")) as {
     version: string;
   };
   const v = pkg.version;
-  return `https://github.com/zigbind/zigbind/releases/download/v${v}/zigbind-${v}.tar.gz`;
+  return `https://github.com/zignapi/zignapi/releases/download/v${v}/zignapi-${v}.tar.gz`;
 }
 
 /**
- * Locate the zigbind Zig sources (the `native/` directory) that ship with this
+ * Locate the zignapi Zig sources (the `native/` directory) that ship with this
  * CLI. Works both from the published npm package (bundled at `<pkg>/native`)
- * and from the monorepo checkout (`packages/zigbind` -> `../../native`).
+ * and from the monorepo checkout (`packages/zignapi` -> `../../native`).
  */
-export function resolveZigbindSources(): string {
+export function resolveZignapiSources(): string {
   const candidates = [
     join(PKG_ROOT, "native"), // bundled inside the published package
     join(PKG_ROOT, "..", "..", "native"), // monorepo layout
@@ -44,7 +44,7 @@ export function resolveZigbindSources(): string {
     if (existsSync(join(dir, "build.zig.zon"))) return dir;
   }
   throw new Error(
-    "could not locate the zigbind Zig sources (native/) shipped with the CLI",
+    "could not locate the zignapi Zig sources (native/) shipped with the CLI",
   );
 }
 

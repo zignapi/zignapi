@@ -4,7 +4,7 @@
     .fingerprint = 0xdc18884832fe8bd2, // Changing this has security and trust implications.
     .minimum_zig_version = "0.16.0",
     .dependencies = .{
-        .zigbind = .{ .path = "../native" },
+        .zignapi = .{ .path = "../native" },
     },
     .paths = .{
         "build.zig",

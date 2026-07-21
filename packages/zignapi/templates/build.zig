@@ -2,13 +2,13 @@ const std = @import("std");
 
 /// Builds the addon into `zig-out/lib/__NAME__.node`.
 ///
-/// The addon is a dynamic library importing the `zigbind` module. N-API symbols
+/// The addon is a dynamic library importing the `zignapi` module. N-API symbols
 /// are left undefined at link time and resolved by Node when it loads the addon.
 pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const zigbind = b.dependency("zigbind", .{}).module("zigbind");
+    const zignapi = b.dependency("zignapi", .{}).module("zignapi");
 
     const addon = b.addLibrary(.{
         .name = "__NAME__",
@@ -19,7 +19,7 @@ pub fn build(b: *std.Build) void {
             .optimize = optimize,
             .link_libc = true,
             .imports = &.{
-                .{ .name = "zigbind", .module = zigbind },
+                .{ .name = "zignapi", .module = zignapi },
             },
         }),
     });

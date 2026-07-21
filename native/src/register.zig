@@ -4,9 +4,9 @@
 //! Usage from an addon's root source file:
 //!
 //! ```zig
-//! const zigbind = @import("zigbind");
+//! const zignapi = @import("zignapi");
 //! pub fn add(a: i32, b: i32) i32 { return a + b; }
-//! comptime { zigbind.register(.{ .add = add }); }
+//! comptime { zignapi.register(.{ .add = add }); }
 //! ```
 
 const std = @import("std");
@@ -24,7 +24,7 @@ pub fn register(comptime defs: anytype) void {
     const Defs = @TypeOf(defs);
     switch (@typeInfo(Defs)) {
         .@"struct" => {},
-        else => @compileError("zigbind.register expects a struct literal, e.g. .{ .add = add }"),
+        else => @compileError("zignapi.register expects a struct literal, e.g. .{ .add = add }"),
     }
 
     const Registrar = struct {
@@ -32,7 +32,7 @@ pub fn register(comptime defs: anytype) void {
             inline for (@typeInfo(Defs).@"struct".fields) |field| {
                 const func = @field(defs, field.name);
                 registerOne(env, exports, field.name, func) catch {
-                    napi.throwError(env, "zigbind: failed to register '" ++ field.name ++ "'");
+                    napi.throwError(env, "zignapi: failed to register '" ++ field.name ++ "'");
                     return null;
                 };
             }
@@ -67,7 +67,7 @@ fn Wrap(comptime func: anytype) type {
             // Collect the JS arguments (one slot per Zig parameter).
             var argv: [fn_info.params.len]napi.Value = undefined;
             _ = napi.getCallbackInfo(env, info, &argv) catch {
-                napi.throwError(env, "zigbind: failed to read arguments");
+                napi.throwError(env, "zignapi: failed to read arguments");
                 return null;
             };
 
@@ -81,7 +81,7 @@ fn Wrap(comptime func: anytype) type {
             var args: std.meta.ArgsTuple(@TypeOf(func)) = undefined;
             inline for (fn_info.params, 0..) |param, i| {
                 args[i] = convert.fromJs(param.type.?, env, argv[i], allocator) catch {
-                    napi.throwError(env, "zigbind: failed to convert argument");
+                    napi.throwError(env, "zignapi: failed to convert argument");
                     return null;
                 };
             }
@@ -108,7 +108,7 @@ fn Wrap(comptime func: anytype) type {
 
         fn toJs(env: napi.Env, comptime T: type, value: T) napi.Value {
             return convert.toJs(T, env, value) catch {
-                napi.throwError(env, "zigbind: failed to convert return value");
+                napi.throwError(env, "zignapi: failed to convert return value");
                 return null;
             };
         }

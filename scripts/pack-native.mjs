@@ -1,8 +1,8 @@
-// Produce the release asset for the zigbind Zig package: a tarball whose ROOT
+// Produce the release asset for the zignapi Zig package: a tarball whose ROOT
 // is the `native/` package (so `build.zig.zon` sits at the tarball root, which
 // is what `zig fetch` expects — a single wrapping directory would NOT work).
 //
-// Output: dist/zigbind-<version>.tar.gz, where <version> is read from
+// Output: dist/zignapi-<version>.tar.gz, where <version> is read from
 // native/build.zig.zon. This is what CI uploads to the GitHub release and what
 // `zignapi new` fetches from.
 //
@@ -33,7 +33,7 @@ for (const m of members) {
 }
 
 mkdirSync(distDir, { recursive: true });
-const out = join(distDir, `zigbind-${version}.tar.gz`);
+const out = join(distDir, `zignapi-${version}.tar.gz`);
 rmSync(out, { force: true });
 
 const res = spawnSync(
