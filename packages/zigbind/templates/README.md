@@ -4,7 +4,7 @@ A native Node.js addon written in [Zig](https://ziglang.org/) with
 [zigbind](https://github.com/) — requires **Zig 0.16.0** and **Node >= 18**.
 
 ```sh
-zigbind build      # compiles src/main.zig into __NAME__.node (and zig-out/lib/)
+zignapi build      # compiles src/main.zig into __NAME__.node (and zig-out/lib/)
 node --test        # runs test.js
 ```
 
@@ -13,7 +13,7 @@ call at the bottom of that file.
 
 ## The zigbind dependency
 
-`zigbind new` added the `zigbind` Zig module to `build.zig.zon` with
+`zignapi new` added the `zigbind` Zig module to `build.zig.zon` with
 `zig fetch --save`, which pins it by content hash:
 
 ```zig

@@ -3,14 +3,14 @@ import process from "node:process";
 import { runNew } from "./new.js";
 import { runBuild } from "./build.js";
 
-const HELP = `zigbind — write native Node.js addons in Zig
+const HELP = `zignapi — write native Node.js addons in Zig
 
 Usage:
-  zigbind new <name>          Scaffold a new addon project into ./<name>
-  zigbind build [--release]   Build the addon in the current directory
-  zigbind --help              Show this help
+  zignapi new <name>          Scaffold a new addon project into ./<name>
+  zignapi build [--release]   Build the addon in the current directory
+  zignapi --help              Show this help
 
-Run "zigbind <command> --help" for command-specific options.
+Run "zignapi <command> --help" for command-specific options.
 `;
 
 async function main(): Promise<void> {
@@ -26,13 +26,13 @@ async function main(): Promise<void> {
       process.stdout.write(HELP);
       return;
     default:
-      process.stderr.write(`zigbind: unknown command '${command}'\n\n${HELP}`);
+      process.stderr.write(`zignapi: unknown command '${command}'\n\n${HELP}`);
       process.exitCode = 1;
   }
 }
 
 main().catch((err: unknown) => {
   const message = err instanceof Error ? err.message : String(err);
-  process.stderr.write(`zigbind: ${message}\n`);
+  process.stderr.write(`zignapi: ${message}\n`);
   process.exitCode = 1;
 });

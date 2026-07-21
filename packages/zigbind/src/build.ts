@@ -4,10 +4,10 @@ import { join, basename, extname } from "node:path";
 import process from "node:process";
 import { runZig } from "./zig.js";
 
-const BUILD_HELP = `zigbind build — build the addon in the current directory
+const BUILD_HELP = `zignapi build — build the addon in the current directory
 
 Usage:
-  zigbind build [--release]
+  zignapi build [--release]
 
 Options:
   --release   Optimize the build (-Doptimize=ReleaseFast)

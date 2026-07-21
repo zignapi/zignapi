@@ -4,7 +4,7 @@
   "private": true,
   "description": "Example zigbind addon exercising the full build/test pipeline",
   "scripts": {
-    "build": "zigbind build",
+    "build": "zignapi build",
     "test": "node --test"
   },
   "dependencies": {

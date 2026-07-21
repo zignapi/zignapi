@@ -39,7 +39,7 @@ zigbind/
 ├── native/                 # the Zig library (a Zig package, NOT an npm package)
 │   ├── src/                # zigbind.zig, napi.zig, convert.zig, async.zig, register.zig
 │   └── vendor/             # vendored N-API headers (node-api-headers)
-├── packages/zigbind/       # the `zigbind` CLI (npm package): `new` + `build`
+├── packages/zigbind/       # the CLI (npm package `zignapi`, command `zignapi`)
 └── playground/             # example addon exercising the whole pipeline
 ```
 
@@ -47,7 +47,7 @@ zigbind/
 
 ```sh
 pnpm install
-pnpm --filter playground build   # compiles the addon via the zigbind CLI
+pnpm --filter playground build   # compiles the addon via the zignapi CLI
 pnpm --filter playground test    # node --test, checks add(2, 3) === 5
 ```
 
@@ -66,17 +66,17 @@ pnpm --filter playground test    # node --test, checks add(2, 3) === 5
 
 Async support (`native/src/async.zig`) is a stub for now — see the TODO there.
 
-## Scaffolding a project (`zigbind new`)
+## Scaffolding a project (`zignapi new`)
 
 The CLI is published to npm as **`zignapi`** (the name `zigbind` was too close to
-an existing package); it installs the `zigbind` command:
+an existing package) and installs the `zignapi` command:
 
 ```sh
 npm install -g zignapi
-zigbind new my-addon
+zignapi new my-addon
 ```
 
-`zigbind new <name>` creates a project and wires the `zigbind` Zig module into
+`zignapi new <name>` creates a project and wires the `zigbind` Zig module into
 its `build.zig.zon` with `zig fetch --save`, pinning it by content hash. By
 default it fetches the **hosted release tarball**
 (`https://github.com/zigbind/zigbind/releases/download/v<version>/zigbind-<version>.tar.gz`),

@@ -1,7 +1,7 @@
 {
   "name": "zignapi",
   "version": "0.1.0",
-  "description": "CLI to scaffold and build native Node.js addons written in Zig (installs the `zigbind` command)",
+  "description": "CLI to scaffold and build native Node.js addons written in Zig (the `zignapi` command)",
   "keywords": [
     "zig",
     "napi",
@@ -18,7 +18,7 @@
   },
   "type": "module",
   "bin": {
-    "zigbind": "dist/cli.js"
+    "zignapi": "dist/cli.js"
   },
   "engines": {
     "node": ">=18"

@@ -22,7 +22,7 @@ jobs:
           node-version: 22
 
       # Build the zigbind Zig package tarball (root = build.zig.zon), which is
-      # what `zigbind new` fetches via `zig fetch --save`.
+      # what `zignapi new` fetches via `zig fetch --save`.
       - name: Pack native sources
         run: node scripts/pack-native.mjs
 

@@ -20,10 +20,10 @@ const TEMPLATES_DIR = join(
 );
 const PLACEHOLDER = /__NAME__/g;
 
-const NEW_HELP = `zigbind new — scaffold a new addon project
+const NEW_HELP = `zignapi new — scaffold a new addon project
 
 Usage:
-  zigbind new <name> [--local]
+  zignapi new <name> [--local]
 
 Creates ./<name> from the built-in template, substituting the project name,
 then wires up the zigbind Zig dependency with "zig fetch --save" (pinned by
@@ -69,7 +69,7 @@ export async function runNew(argv: string[]): Promise<void> {
     `✔ created ${name}/\n\n` +
       `Next steps:\n` +
       `  cd ${name}\n` +
-      `  zigbind build      # produces ${name}.node\n` +
+      `  zignapi build      # produces ${name}.node\n` +
       `  node --test\n`,
   );
 }

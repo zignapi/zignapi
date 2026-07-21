@@ -1,18 +1,19 @@
-# zignapi (the `zigbind` CLI)
+# zignapi
 
-Scaffold and build native Node.js addons written in Zig. Written in TypeScript,
-compiled to ESM with **zero runtime dependencies**, no `node-gyp`. Requires
-**Zig 0.16.0** on `PATH` and **Node >= 18**.
+The CLI for [zigbind](https://github.com/zigbind/zigbind): scaffold and build
+native Node.js addons written in Zig. Written in TypeScript, compiled to ESM with
+**zero runtime dependencies**, no `node-gyp`. Requires **Zig 0.16.0** on `PATH`
+and **Node >= 18**.
 
 ```sh
-npm install -g zignapi   # the npm package is `zignapi`; it installs the `zigbind` command
+npm install -g zignapi   # installs the `zignapi` command
 ```
 
 ## Commands
 
 ```sh
-zigbind new <name>          # scaffold ./<name> from the built-in template
-zigbind build [--release]   # run `zig build` in the cwd, emit ./<name>.node
+zignapi new <name>          # scaffold ./<name> from the built-in template
+zignapi build [--release]   # run `zig build` in the cwd, emit ./<name>.node
 ```
 
 - `new` copies the template tree (substituting the project name) and pins the

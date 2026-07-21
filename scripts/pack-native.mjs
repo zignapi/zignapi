@@ -4,7 +4,7 @@
 //
 // Output: dist/zigbind-<version>.tar.gz, where <version> is read from
 // native/build.zig.zon. This is what CI uploads to the GitHub release and what
-// `zigbind new` fetches from.
+// `zignapi new` fetches from.
 //
 // Usage: node scripts/pack-native.mjs
 import { spawnSync } from "node:child_process";

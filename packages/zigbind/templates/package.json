@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "zigbind build",
+    "build": "zignapi build",
     "test": "node --test"
   }
 }
