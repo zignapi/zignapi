@@ -1,8 +1,10 @@
 name: Publish CLI to npm
 
-# Manual trigger — run this once the GitHub release (and its native tarball
-# asset) exists, so the published CLI's default release URL resolves. Requires
-# an NPM_TOKEN secret with publish rights to the `zigbind` package.
+# Manual re-publish path. The normal release flow publishes npm automatically
+# (the `publish-npm` job in release.yml, on a `v*` tag). Use this to re-run a
+# publish on its own — e.g. if that job failed after the release asset was
+# already uploaded. Requires an NPM_TOKEN secret (an npm "Automation" token,
+# which bypasses 2FA) with publish rights to the `zigbind` package.
 on:
   workflow_dispatch:
 

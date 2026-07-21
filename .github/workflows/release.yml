@@ -41,3 +41,25 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh release create "${GITHUB_REF_NAME}" dist/zigbind-*.tar.gz --generate-notes
+
+  # Publish the CLI to npm *after* the release asset exists, so the published
+  # CLI's default release URL resolves. Requires an NPM_TOKEN secret (an npm
+  # "Automation" token, which bypasses 2FA) with publish rights to `zigbind`.
+  publish-npm:
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+
+      # `prepack` bundles native/ into the package as the offline fallback.
+      - name: Publish
+        working-directory: packages/zigbind
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public
