@@ -68,11 +68,11 @@ Async support (`native/src/async.zig`) is a stub for now — see the TODO there.
 
 ## Scaffolding a project (`zigbind new`)
 
-The CLI is published to npm as **`zig-napi`** (the name `zigbind` was too close to
+The CLI is published to npm as **`zignapi`** (the name `zigbind` was too close to
 an existing package); it installs the `zigbind` command:
 
 ```sh
-npm install -g zig-napi
+npm install -g zignapi
 zigbind new my-addon
 ```
 

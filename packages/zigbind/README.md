@@ -1,11 +1,11 @@
-# zig-napi (the `zigbind` CLI)
+# zignapi (the `zigbind` CLI)
 
 Scaffold and build native Node.js addons written in Zig. Written in TypeScript,
 compiled to ESM with **zero runtime dependencies**, no `node-gyp`. Requires
 **Zig 0.16.0** on `PATH` and **Node >= 18**.
 
 ```sh
-npm install -g zig-napi   # the npm package is `zig-napi`; it installs the `zigbind` command
+npm install -g zignapi   # the npm package is `zignapi`; it installs the `zigbind` command
 ```
 
 ## Commands
@@ -29,7 +29,7 @@ so build through the workspace:
 
 ```sh
 pnpm install                 # the root `prepare` script compiles the CLI
-pnpm --filter zig-napi build  # or rebuild explicitly (runs tsc)
+pnpm --filter zignapi build  # or rebuild explicitly (runs tsc)
 ```
 
 The `bin` points at the compiled `dist/cli.js`; the published package ships

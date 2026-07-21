@@ -1,5 +1,5 @@
 {
-  "name": "zig-napi",
+  "name": "zignapi",
   "version": "0.1.0",
   "description": "CLI to scaffold and build native Node.js addons written in Zig (installs the `zigbind` command)",
   "keywords": [

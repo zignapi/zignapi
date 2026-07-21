@@ -19,7 +19,7 @@ importers:
 
   playground:
     dependencies:
-      zig-napi:
+      zignapi:
         specifier: workspace:*
         version: link:../packages/zigbind
 
