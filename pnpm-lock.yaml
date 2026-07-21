@@ -1,0 +1,17 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .: {}
+
+  packages/zigbind: {}
+
+  playground:
+    dependencies:
+      zigbind:
+        specifier: workspace:*
+        version: link:../packages/zigbind
