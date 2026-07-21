@@ -1,0 +1,10 @@
+{
+  "name": "zigbind-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Write native Node.js addons in Zig (napi-rs, but for Zig)",
+  "engines": {
+    "node": ">=18"
+  },
+  "packageManager": "pnpm@11.8.0"
+}
