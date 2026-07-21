@@ -9,7 +9,7 @@ import {
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import process from "node:process";
-import { resolveZigbindSources, runZig } from "./zig.js";
+import { releaseUrl, resolveZigbindSources, runZig } from "./zig.js";
 
 const TEMPLATES_DIR = join(dirname(fileURLToPath(import.meta.url)), "templates");
 const PLACEHOLDER = /__NAME__/g;
@@ -17,10 +17,18 @@ const PLACEHOLDER = /__NAME__/g;
 const NEW_HELP = `zigbind new — scaffold a new addon project
 
 Usage:
-  zigbind new <name>
+  zigbind new <name> [--local]
 
 Creates ./<name> from the built-in template, substituting the project name,
-then wires up the zigbind Zig dependency with "zig fetch --save".
+then wires up the zigbind Zig dependency with "zig fetch --save" (pinned by
+content hash). By default it fetches the hosted release tarball, so the project
+is portable across machines/CI; if that's unreachable it falls back to the Zig
+sources bundled with the CLI.
+
+Options:
+  --local     Use the bundled Zig sources instead of the hosted release
+  -h, --help  Show this help
+
 <name> must be a valid Zig identifier (letters, digits, underscore; not
 starting with a digit).
 `;
@@ -30,6 +38,7 @@ export async function runNew(argv) {
     args: argv,
     allowPositionals: true,
     options: {
+      local: { type: "boolean", default: false },
       help: { type: "boolean", short: "h", default: false },
     },
   });
@@ -48,7 +57,7 @@ export async function runNew(argv) {
   }
 
   copyTemplate(TEMPLATES_DIR, target, name);
-  addZigbindDependency(target);
+  addZigbindDependency(target, { local: values.local });
 
   process.stdout.write(
     `✔ created ${name}/\n\n` +
@@ -59,23 +68,38 @@ export async function runNew(argv) {
   );
 }
 
-/// Add the `zigbind` Zig dependency to the freshly scaffolded project by
-/// running `zig fetch --save` against the sources shipped with the CLI. This
-/// pins zigbind by content hash and removes any reliance on a fixed relative
-/// path. Non-fatal: if Zig isn't available, tell the user how to do it later.
-function addZigbindDependency(target) {
+/// Add the `zigbind` Zig dependency to the freshly scaffolded project via
+/// `zig fetch --save`, pinning it by content hash. Prefers the hosted release
+/// tarball (portable across machines) and falls back to the Zig sources bundled
+/// with the CLI if that's unreachable or `--local` is set. Non-fatal: if Zig
+/// isn't available at all, tell the user how to finish the wiring later.
+function addZigbindDependency(target, { local }) {
+  const repairZon = join(target, "build.zig.zon");
+
+  if (!local) {
+    const url = releaseUrl();
+    try {
+      runZig(target, ["fetch", "--save=zigbind", url], { repairZon });
+      process.stdout.write(`✔ added zigbind dependency from ${url}\n`);
+      return;
+    } catch (err) {
+      process.stderr.write(
+        `note: could not fetch the hosted zigbind release (${err.message}); ` +
+          `falling back to the bundled sources.\n`,
+      );
+    }
+  }
+
   let sources;
   try {
     sources = resolveZigbindSources();
-    runZig(target, ["fetch", "--save=zigbind", sources], {
-      repairZon: join(target, "build.zig.zon"),
-    });
-    process.stdout.write("✔ added zigbind dependency (zig fetch --save)\n");
+    runZig(target, ["fetch", "--save=zigbind", sources], { repairZon });
+    process.stdout.write("✔ added zigbind dependency from bundled sources\n");
   } catch (err) {
     process.stderr.write(
       `warning: could not add the zigbind dependency automatically ` +
         `(${err.message}).\nRun this inside the project once Zig 0.16.0 is ` +
-        `available:\n  zig fetch --save=zigbind ${sources ?? "<path-to-zigbind/native>"}\n`,
+        `available:\n  zig fetch --save=zigbind ${sources ?? releaseUrl()}\n`,
     );
   }
 }

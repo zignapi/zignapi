@@ -69,16 +69,31 @@ Async support (`native/src/async.zig`) is a stub for now — see the TODO there.
 ## Scaffolding a project (`zigbind new`)
 
 `zigbind new <name>` creates a project and wires the `zigbind` Zig module into
-its `build.zig.zon` with `zig fetch --save`, pinning it by content hash instead
-of a fixed relative path — so a scaffolded project builds from anywhere on the
-machine, not just inside this monorepo. The `native/` sources ship inside the
-`zigbind` npm package (bundled at publish time), and the CLI resolves them from
-there (or from `../../native` in this checkout).
+its `build.zig.zon` with `zig fetch --save`, pinning it by content hash. By
+default it fetches the **hosted release tarball**
+(`https://github.com/zigbind/zigbind/releases/download/v<version>/zigbind-<version>.tar.gz`),
+so a scaffolded project is portable across machines and CI. If that URL is
+unreachable — or you pass `--local` — it falls back to the Zig sources bundled
+with the CLI (or `../../native` in this checkout). Override the URL with
+`ZIGBIND_RELEASE_URL` (handy for a mirror or a local `file://` tarball).
 
 The `playground/` deliberately keeps a plain `.path = "../native"` dependency
 instead: it's the in-repo dev harness, so it should track edits to `native/`
 live without a re-fetch.
 
-> Sharing a scaffolded project across machines/CI still needs `native/` at a
-> stable **hosted** URL (e.g. a GitHub release tarball). Swap the generated
-> `url` for that tarball — the `hash` is unchanged since it's content-addressed.
+## Releasing
+
+The Zig library is distributed as a GitHub **release asset** — a tarball whose
+root is the `native/` package (so `build.zig.zon` sits at the tarball root,
+which is what `zig fetch` requires).
+
+1. Bump `.version` in `native/build.zig.zon` **and** `packages/zigbind/package.json`
+   to the same value.
+2. Tag and push: `git tag v0.1.0 && git push --tags`.
+3. `.github/workflows/release.yml` builds `dist/zigbind-<version>.tar.gz`
+   (`node scripts/pack-native.mjs`) and uploads it to the release.
+4. Publish the CLI to npm (the `Publish CLI to npm` workflow, or `npm publish`
+   from `packages/zigbind` — `prepack` bundles `native/` as the offline fallback).
+
+> A published release asset is immutable: never re-upload it for the same tag,
+> or the pinned `hash` in downstream projects will stop matching.

@@ -6,6 +6,18 @@ import process from "node:process";
 
 const PKG_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
+/// The hosted release tarball of the zigbind Zig package, used as the default
+/// (portable, shareable) dependency source. Overridable via ZIGBIND_RELEASE_URL
+/// — handy for testing against a local `file://` tarball or a mirror. The
+/// version is taken from this CLI's package.json and must match the release tag.
+export function releaseUrl() {
+  const override = process.env.ZIGBIND_RELEASE_URL;
+  if (override) return override;
+  const pkg = JSON.parse(readFileSync(join(PKG_ROOT, "package.json"), "utf8"));
+  const v = pkg.version;
+  return `https://github.com/zigbind/zigbind/releases/download/v${v}/zigbind-${v}.tar.gz`;
+}
+
 /// Locate the zigbind Zig sources (the `native/` directory) that ship with this
 /// CLI. Works both from the published npm package (bundled at `<pkg>/native`)
 /// and from the monorepo checkout (`packages/zigbind` -> `../../native`).

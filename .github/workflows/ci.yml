@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Pins Zig 0.16.0 — the exact version zigbind targets.
+      - name: Set up Zig
+        uses: mlugg/setup-zig@v2
+        with:
+          version: 0.16.0
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Print tool versions
+        run: |
+          zig version
+          node --version
+          pnpm --version
+
+      # 1) The Zig library compiles on its own and its unit tests pass.
+      - name: native — build + test
+        working-directory: native
+        run: |
+          zig build
+          zig build test
+
+      # 2) The full pipeline through the CLI: build the addon and run node --test.
+      - name: workspace — install
+        run: pnpm install --frozen-lockfile
+
+      - name: playground — build
+        run: pnpm --filter playground build
+
+      - name: playground — test
+        run: pnpm --filter playground test

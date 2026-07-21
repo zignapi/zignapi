@@ -3,5 +3,8 @@ zig-out/
 .zig-cache/
 *.node
 
+# Release assets produced by scripts/pack-native.mjs
+dist/
+
 # Generated at publish time by packages/zigbind/scripts/prepack.mjs
 packages/zigbind/native/
