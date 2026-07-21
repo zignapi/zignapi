@@ -10,4 +10,4 @@ dist/
 packages/zigbind/dist/
 
 # Generated at publish time by packages/zigbind/scripts/prepack.mjs
-packages/zigbind/native/
+native/

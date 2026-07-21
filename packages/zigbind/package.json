@@ -1,10 +1,24 @@
 {
-  "name": "zigbind",
+  "name": "zig-napi",
   "version": "0.1.0",
-  "description": "CLI to scaffold and build native Node.js addons written in Zig",
+  "description": "CLI to scaffold and build native Node.js addons written in Zig (installs the `zigbind` command)",
+  "keywords": [
+    "zig",
+    "napi",
+    "node-api",
+    "native",
+    "addon",
+    "zigbind"
+  ],
+  "homepage": "https://github.com/zigbind/zigbind",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zigbind/zigbind.git",
+    "directory": "packages/zigbind"
+  },
   "type": "module",
   "bin": {
-    "zigbind": "./dist/cli.js"
+    "zigbind": "dist/cli.js"
   },
   "engines": {
     "node": ">=18"

@@ -8,6 +8,6 @@
     "test": "node --test"
   },
   "dependencies": {
-    "zigbind": "workspace:*"
+    "zig-napi": "workspace:*"
   }
 }

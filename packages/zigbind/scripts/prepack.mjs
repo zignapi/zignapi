@@ -16,7 +16,7 @@ const dest = join(pkgRoot, "native");
 // publish through pnpm or the release workflow (which build first), not bare
 // `npm publish` from this directory.
 if (!existsSync(join(pkgRoot, "dist", "cli.js"))) {
-  console.error("prepack: dist/ is missing — run `pnpm --filter zigbind build` first");
+  console.error("prepack: dist/ is missing — run `pnpm --filter zig-napi build` first");
   process.exit(1);
 }
 

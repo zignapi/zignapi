@@ -68,6 +68,14 @@ Async support (`native/src/async.zig`) is a stub for now — see the TODO there.
 
 ## Scaffolding a project (`zigbind new`)
 
+The CLI is published to npm as **`zig-napi`** (the name `zigbind` was too close to
+an existing package); it installs the `zigbind` command:
+
+```sh
+npm install -g zig-napi
+zigbind new my-addon
+```
+
 `zigbind new <name>` creates a project and wires the `zigbind` Zig module into
 its `build.zig.zon` with `zig fetch --save`, pinning it by content hash. By
 default it fetches the **hosted release tarball**
