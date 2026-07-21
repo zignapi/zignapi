@@ -16,6 +16,9 @@ comptime {
     _ = napi.getCallbackInfo;
     _ = napi.setNamedProperty;
     _ = napi.createFunction;
+    _ = napi.createString;
+    _ = napi.getUndefined;
+    _ = napi.createError;
 }
 
 fn add(a: i32, b: i32) i32 {
@@ -34,6 +37,21 @@ fn checked(x: i32) !i32 {
     return if (x < 0) error.MustBeNonNegative else x;
 }
 
+// Async: runs on the thread pool, returns a Promise.
+fn heavy(a: i32, b: i32) i32 {
+    return a * b;
+}
+fn heavyChecked(x: i32) !i32 {
+    return if (x < 0) error.MustBeNonNegative else x;
+}
+
+// Raw passthrough: `napi.Env` / `napi.Value` params + a threadsafe function.
+fn onEvent(env: napi.Env, callback: napi.Value) void {
+    const tsfn = zignapi.ThreadsafeFunction(i32).create(env, callback) catch return;
+    tsfn.call(1) catch {};
+    tsfn.release();
+}
+
 comptime {
     zignapi.register(.{
         .add = add,
@@ -41,5 +59,8 @@ comptime {
         .scale = scale,
         .echo = echo,
         .checked = checked,
+        .heavy = zignapi.asyncFn(heavy),
+        .heavyChecked = zignapi.asyncFn(heavyChecked),
+        .onEvent = onEvent,
     });
 }

@@ -6,12 +6,15 @@
 //! and writes `index.d.ts` / `index.js`.
 
 const std = @import("std");
+const napi = @import("napi.zig");
 const convert = @import("convert.zig");
+const asyncwork = @import("async.zig");
 
-/// The TypeScript type string for a Zig type. Error unions map to their payload
-/// (Zig errors surface as thrown JS exceptions, which don't appear in the type);
-/// `void` maps to `void`.
+/// The TypeScript type string for a Zig type. `napi.Value` (a raw JS handle,
+/// e.g. a callback) maps to `any`; error unions map to their payload (Zig
+/// errors surface as thrown JS exceptions); `void` maps to `void`.
 pub fn tsType(comptime T: type) []const u8 {
+    if (T == napi.Value) return "any";
     return switch (@typeInfo(T)) {
         .void => "void",
         .error_union => |eu| tsType(eu.payload),
@@ -27,26 +30,34 @@ pub fn tsType(comptime T: type) []const u8 {
 }
 
 /// Build the `.d.ts` body: one `export function` line per registered function.
-/// Parameter names aren't available from `@typeInfo`, so they're `arg0`, `arg1`, …
+/// `napi.Env` parameters are skipped (they aren't JS arguments); `asyncFn`
+/// functions return `Promise<T>`. Parameter names are `arg0`, `arg1`, …
 pub fn declarations(comptime defs: anytype) []const u8 {
     comptime var out: []const u8 = "";
     inline for (@typeInfo(@TypeOf(defs)).@"struct".fields) |field| {
-        const fn_info = @typeInfo(@TypeOf(@field(defs, field.name))).@"fn";
+        const field_val = @field(defs, field.name);
+        const is_async = asyncwork.isAsyncMarker(@TypeOf(field_val));
+        const func = if (is_async) @TypeOf(field_val).func else field_val;
+        const fn_info = @typeInfo(@TypeOf(func)).@"fn";
+
         comptime var params: []const u8 = "";
-        inline for (fn_info.params, 0..) |param, i| {
-            const sep = if (i == 0) "" else ", ";
-            params = params ++ sep ++ std.fmt.comptimePrint(
-                "arg{d}: {s}",
-                .{ i, tsType(param.type.?) },
-            );
+        comptime var js_i: usize = 0;
+        inline for (fn_info.params) |param| {
+            const P = param.type.?;
+            if (P == napi.Env) continue; // not a JS argument
+            const sep = if (js_i == 0) "" else ", ";
+            params = params ++ sep ++ std.fmt.comptimePrint("arg{d}: {s}", .{ js_i, tsType(P) });
+            js_i += 1;
         }
-        out = out ++ "export function " ++ field.name ++ "(" ++ params ++
-            "): " ++ tsType(fn_info.return_type.?) ++ ";\n";
+
+        const ret = tsType(fn_info.return_type.?);
+        const ret_str = if (is_async) "Promise<" ++ ret ++ ">" else ret;
+        out = out ++ "export function " ++ field.name ++ "(" ++ params ++ "): " ++ ret_str ++ ";\n";
     }
     return out;
 }
 
-test "declarations render one export per function" {
+test "declarations render sync, async and passthrough signatures" {
     const S = struct {
         fn add(a: i32, b: i32) i32 {
             return a + b;
@@ -54,24 +65,25 @@ test "declarations render one export per function" {
         fn greet(name: []const u8) []const u8 {
             return name;
         }
-        fn toggle(x: bool) bool {
-            return !x;
+        fn heavy(a: i32, b: i32) i32 {
+            return a * b;
         }
-        fn checked(x: i32) !i32 {
-            return x;
+        fn onEvent(env: napi.Env, cb: napi.Value) void {
+            _ = env;
+            _ = cb;
         }
     };
     const dts = comptime declarations(.{
         .add = S.add,
         .greet = S.greet,
-        .toggle = S.toggle,
-        .checked = S.checked,
+        .heavy = asyncwork.asyncFn(S.heavy),
+        .onEvent = S.onEvent,
     });
     try std.testing.expectEqualStrings(
         \\export function add(arg0: number, arg1: number): number;
         \\export function greet(arg0: string): string;
-        \\export function toggle(arg0: boolean): boolean;
-        \\export function checked(arg0: number): number;
+        \\export function heavy(arg0: number, arg1: number): Promise<number>;
+        \\export function onEvent(arg0: any): void;
         \\
     , dts);
 }

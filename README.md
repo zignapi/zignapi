@@ -68,7 +68,12 @@ pnpm --filter playground test    # node --test, checks add(2, 3) === 5
   reads them back and writes `index.js` (a loader) + `index.d.ts` (types), so
   consumers get `import { add } from "my-addon"` with full typing.
 
-Async support (`native/src/async.zig`) is a stub for now — see the TODO there.
+- `native/src/async.zig` provides two async paths. `zignapi.asyncFn(f)` runs `f`
+  on libuv's thread pool (arguments converted on the JS thread, body off it) and
+  returns a `Promise` that resolves with the result or rejects on a Zig error.
+  `zignapi.ThreadsafeFunction(T)` lets native code call a JS callback from any
+  thread — build one from a callback the addon takes as a raw `napi.Value`
+  (`napi.Env`/`napi.Value` parameters pass through and aren't JS arguments).
 
 ## Scaffolding a project (`zignapi new`)
 

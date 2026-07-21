@@ -67,3 +67,18 @@ pub fn createString(env: Env, s: []const u8) Error!Value {
     try check(c.napi_create_string_utf8(env, s.ptr, s.len, &result));
     return result;
 }
+
+/// The JS `undefined` value.
+pub fn getUndefined(env: Env) Error!Value {
+    var result: Value = undefined;
+    try check(c.napi_get_undefined(env, &result));
+    return result;
+}
+
+/// Create a JS `Error` object carrying `msg` (used to reject promises).
+pub fn createError(env: Env, msg: []const u8) Error!Value {
+    const message = try createString(env, msg);
+    var result: Value = undefined;
+    try check(c.napi_create_error(env, null, message, &result));
+    return result;
+}

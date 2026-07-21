@@ -18,6 +18,12 @@ pub const async_ = @import("async.zig");
 /// Register Zig functions as a Node addon. See `register.zig`.
 pub const register = @import("register.zig").register;
 
+/// Mark a function as async (runs on libuv's thread pool, returns a `Promise`).
+pub const asyncFn = async_.asyncFn;
+
+/// A JS callback callable from any thread. See `async.zig`.
+pub const ThreadsafeFunction = async_.ThreadsafeFunction;
+
 /// The raw imported N-API C API (`napi_*` functions and types).
 pub const c = napi.c;
 

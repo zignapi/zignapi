@@ -13,6 +13,7 @@ const std = @import("std");
 const napi = @import("napi.zig");
 const convert = @import("convert.zig");
 const typedefs = @import("typedefs.zig");
+const asyncwork = @import("async.zig");
 const c = napi.c;
 
 /// Export `napi_register_module_v1` for the given set of functions.
@@ -35,8 +36,7 @@ pub fn register(comptime defs: anytype) void {
     const Registrar = struct {
         fn entry(env: napi.Env, exports: napi.Value) callconv(.c) napi.Value {
             inline for (@typeInfo(Defs).@"struct".fields) |field| {
-                const func = @field(defs, field.name);
-                registerOne(env, exports, field.name, func) catch {
+                registerField(env, exports, field.name, @field(defs, field.name)) catch {
                     napi.throwError(env, "zignapi: failed to register '" ++ field.name ++ "'");
                     return null;
                 };
@@ -53,15 +53,25 @@ pub fn register(comptime defs: anytype) void {
     @export(&Registrar.entry, .{ .name = "napi_register_module_v1", .linkage = .strong });
 }
 
-/// Bind a single function onto `exports` under `name`.
-fn registerOne(
+/// Bind a single field onto `exports` under `name`. The field is either a plain
+/// function (registered synchronously) or an `asyncFn(...)` marker (registered
+/// as an async, promise-returning function).
+fn registerField(
     env: napi.Env,
     exports: napi.Value,
     comptime name: [:0]const u8,
-    comptime func: anytype,
+    comptime field_val: anytype,
 ) !void {
-    const fn_value = try napi.createFunction(env, name, Wrap(func).callback);
+    const fn_value = try napi.createFunction(env, name, callbackFor(field_val));
     try napi.setNamedProperty(env, exports, name, fn_value);
+}
+
+fn callbackFor(comptime field_val: anytype) napi.Callback {
+    const FieldT = @TypeOf(field_val);
+    if (comptime asyncwork.isAsyncMarker(FieldT)) {
+        return asyncwork.AsyncWrap(FieldT.func).callback;
+    }
+    return Wrap(field_val).callback;
 }
 
 /// Build the `napi_callback` trampoline for a specific Zig function.
@@ -87,13 +97,25 @@ fn Wrap(comptime func: anytype) type {
             defer arena.deinit();
             const allocator = arena.allocator();
 
-            // Convert each argument from JS into its Zig type.
+            // Convert each argument from JS into its Zig type. `napi.Env` and
+            // `napi.Value` parameters are passed through raw and don't consume a
+            // JS argument (like napi-rs's `Env`), so track the JS index separately.
             var args: std.meta.ArgsTuple(@TypeOf(func)) = undefined;
+            comptime var js_arg: usize = 0;
             inline for (fn_info.params, 0..) |param, i| {
-                args[i] = convert.fromJs(param.type.?, env, argv[i], allocator) catch {
-                    napi.throwError(env, "zignapi: failed to convert argument");
-                    return null;
-                };
+                const P = param.type.?;
+                if (P == napi.Env) {
+                    args[i] = env;
+                } else if (P == napi.Value) {
+                    args[i] = argv[js_arg];
+                    js_arg += 1;
+                } else {
+                    args[i] = convert.fromJs(P, env, argv[js_arg], allocator) catch {
+                        napi.throwError(env, "zignapi: failed to convert argument");
+                        return null;
+                    };
+                    js_arg += 1;
+                }
             }
 
             const result = @call(.auto, func, args);

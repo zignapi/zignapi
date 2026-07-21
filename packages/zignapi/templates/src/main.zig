@@ -11,11 +11,18 @@ pub fn greet(name: []const u8) []const u8 {
     return "hello from Zig";
 }
 
+/// Async — `zignapi.asyncFn` runs it on a worker thread and returns a
+/// `Promise`. The body must not touch JS (it runs off the JS thread).
+fn slowSquare(x: i32) i32 {
+    return x * x;
+}
+
 // Emits `napi_register_module_v1`. Each field becomes a property on the addon's
 // `exports`. Add your own Zig functions here.
 comptime {
     zignapi.register(.{
         .add = add,
         .greet = greet,
+        .slowSquare = zignapi.asyncFn(slowSquare),
     });
 }
