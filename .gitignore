@@ -14,4 +14,4 @@ dist/
 packages/zignapi/dist/
 
 # Generated at publish time by packages/zignapi/scripts/prepack.mjs
-native/
+/packages/zignapi/native/
