@@ -60,3 +60,10 @@ pub fn createFunction(env: Env, name: [:0]const u8, cb: Callback) Error!Value {
     try check(c.napi_create_function(env, name.ptr, name.len, cb, null, &result));
     return result;
 }
+
+/// Create a JS UTF-8 string from a Zig slice.
+pub fn createString(env: Env, s: []const u8) Error!Value {
+    var result: Value = undefined;
+    try check(c.napi_create_string_utf8(env, s.ptr, s.len, &result));
+    return result;
+}

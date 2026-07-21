@@ -3,6 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "description": "Example zignapi addon exercising the full build/test pipeline",
+  "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "build": "zignapi build",
     "test": "node --test"

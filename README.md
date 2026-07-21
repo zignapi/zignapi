@@ -63,6 +63,10 @@ pnpm --filter playground test    # node --test, checks add(2, 3) === 5
 - The addon is built as a dynamic library and installed as `<name>.node`. N-API
   symbols are left undefined at link time (`-fallow-shlib-undefined`, the portable
   equivalent of macOS `-undefined dynamic_lookup`) and resolved by Node at load.
+- `native/src/typedefs.zig` derives **TypeScript declarations** from the same
+  `@typeInfo` used for conversions and embeds them in the addon. `zignapi build`
+  reads them back and writes `index.js` (a loader) + `index.d.ts` (types), so
+  consumers get `import { add } from "my-addon"` with full typing.
 
 Async support (`native/src/async.zig`) is a stub for now — see the TODO there.
 

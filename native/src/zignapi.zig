@@ -12,6 +12,7 @@ const std = @import("std");
 
 pub const napi = @import("napi.zig");
 pub const convert = @import("convert.zig");
+pub const typedefs = @import("typedefs.zig");
 pub const async_ = @import("async.zig");
 
 /// Register Zig functions as a Node addon. See `register.zig`.

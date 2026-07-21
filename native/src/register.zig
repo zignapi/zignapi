@@ -12,6 +12,7 @@
 const std = @import("std");
 const napi = @import("napi.zig");
 const convert = @import("convert.zig");
+const typedefs = @import("typedefs.zig");
 const c = napi.c;
 
 /// Export `napi_register_module_v1` for the given set of functions.
@@ -27,6 +28,10 @@ pub fn register(comptime defs: anytype) void {
         else => @compileError("zignapi.register expects a struct literal, e.g. .{ .add = add }"),
     }
 
+    // TypeScript declarations for this module, generated at comptime and
+    // embedded so `zignapi build` can emit `index.d.ts` / `index.js`.
+    const dts = typedefs.declarations(defs);
+
     const Registrar = struct {
         fn entry(env: napi.Env, exports: napi.Value) callconv(.c) napi.Value {
             inline for (@typeInfo(Defs).@"struct".fields) |field| {
@@ -36,6 +41,11 @@ pub fn register(comptime defs: anytype) void {
                     return null;
                 };
             }
+            // Best-effort: attach the type declarations. Failure here must not
+            // break a working module, so ignore errors.
+            if (napi.createString(env, dts)) |v| {
+                napi.setNamedProperty(env, exports, "__zignapi_dts__", v) catch {};
+            } else |_| {}
             return exports;
         }
     };

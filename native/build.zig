@@ -42,17 +42,18 @@ pub fn build(b: *std.Build) void {
     });
     b.getInstallStep().dependOn(&check_obj.step);
 
-    // Unit tests: only the pure-comptime conversions (no N-API runtime calls),
-    // so the test binary links without Node present.
-    const tests_mod = b.createModule(.{
-        .root_source_file = b.path("src/convert.zig"),
-        .target = target,
-        .optimize = optimize,
-        .link_libc = true,
-    });
-    tests_mod.addIncludePath(headers);
-    const unit_tests = b.addTest(.{ .root_module = tests_mod });
-    const run_tests = b.addRunArtifact(unit_tests);
+    // Unit tests: only pure-comptime code (no N-API runtime calls), so the test
+    // binaries link without Node present.
     const test_step = b.step("test", "Run zignapi unit tests");
-    test_step.dependOn(&run_tests.step);
+    for ([_][]const u8{ "src/convert.zig", "src/typedefs.zig" }) |root| {
+        const tests_mod = b.createModule(.{
+            .root_source_file = b.path(root),
+            .target = target,
+            .optimize = optimize,
+            .link_libc = true,
+        });
+        tests_mod.addIncludePath(headers);
+        const unit_tests = b.addTest(.{ .root_module = tests_mod });
+        test_step.dependOn(&b.addRunArtifact(unit_tests).step);
+    }
 }

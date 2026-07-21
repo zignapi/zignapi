@@ -9,7 +9,7 @@ import {
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import process from "node:process";
-import { releaseUrl, resolveZignapiSources, runZig } from "./zig.js";
+import { releaseUrl, resolveZignapiSources, runZig, errMessage } from "./zig.js";
 
 // The template tree lives at the package root (as `templates/`), so it resolves
 // the same whether we run from the compiled `dist/` or the source `src/`.
@@ -140,8 +140,4 @@ function validateName(name: string): void {
         `must not start with a digit)`,
     );
   }
-}
-
-function errMessage(err: unknown): string {
-  return err instanceof Error ? err.message : String(err);
 }
