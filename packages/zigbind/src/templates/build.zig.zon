@@ -1,0 +1,16 @@
+.{
+    .name = .__NAME__,
+    .version = "0.1.0",
+    .minimum_zig_version = "0.16.0",
+    // The fingerprint is filled in automatically on the first `zigbind build`.
+    .dependencies = .{
+        // Points at the zigbind Zig sources shipped in this monorepo. When
+        // scaffolding elsewhere, adjust this path to wherever `native/` lives.
+        .zigbind = .{ .path = "../native" },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}

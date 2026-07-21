@@ -1,0 +1,17 @@
+{
+  "name": "zigbind",
+  "version": "0.1.0",
+  "description": "CLI to scaffold and build native Node.js addons written in Zig",
+  "type": "module",
+  "bin": {
+    "zigbind": "./bin/zigbind.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "bin",
+    "src"
+  ],
+  "license": "MIT"
+}
