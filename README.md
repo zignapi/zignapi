@@ -65,3 +65,20 @@ pnpm --filter playground test    # node --test, checks add(2, 3) === 5
   equivalent of macOS `-undefined dynamic_lookup`) and resolved by Node at load.
 
 Async support (`native/src/async.zig`) is a stub for now — see the TODO there.
+
+## Scaffolding a project (`zigbind new`)
+
+`zigbind new <name>` creates a project and wires the `zigbind` Zig module into
+its `build.zig.zon` with `zig fetch --save`, pinning it by content hash instead
+of a fixed relative path — so a scaffolded project builds from anywhere on the
+machine, not just inside this monorepo. The `native/` sources ship inside the
+`zigbind` npm package (bundled at publish time), and the CLI resolves them from
+there (or from `../../native` in this checkout).
+
+The `playground/` deliberately keeps a plain `.path = "../native"` dependency
+instead: it's the in-repo dev harness, so it should track edits to `native/`
+live without a re-fetch.
+
+> Sharing a scaffolded project across machines/CI still needs `native/` at a
+> stable **hosted** URL (e.g. a GitHub release tarball). Swap the generated
+> `url` for that tarball — the `hash` is unchanged since it's content-addressed.

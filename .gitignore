@@ -2,3 +2,6 @@ node_modules/
 zig-out/
 .zig-cache/
 *.node
+
+# Generated at publish time by packages/zigbind/scripts/prepack.mjs
+packages/zigbind/native/

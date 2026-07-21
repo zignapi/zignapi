@@ -11,7 +11,11 @@
   },
   "files": [
     "bin",
-    "src"
+    "src",
+    "native"
   ],
+  "scripts": {
+    "prepack": "node scripts/prepack.mjs"
+  },
   "license": "MIT"
 }

@@ -9,6 +9,7 @@ import {
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import process from "node:process";
+import { resolveZigbindSources, runZig } from "./zig.js";
 
 const TEMPLATES_DIR = join(dirname(fileURLToPath(import.meta.url)), "templates");
 const PLACEHOLDER = /__NAME__/g;
@@ -18,7 +19,8 @@ const NEW_HELP = `zigbind new — scaffold a new addon project
 Usage:
   zigbind new <name>
 
-Creates ./<name> from the built-in template, substituting the project name.
+Creates ./<name> from the built-in template, substituting the project name,
+then wires up the zigbind Zig dependency with "zig fetch --save".
 <name> must be a valid Zig identifier (letters, digits, underscore; not
 starting with a digit).
 `;
@@ -46,6 +48,7 @@ export async function runNew(argv) {
   }
 
   copyTemplate(TEMPLATES_DIR, target, name);
+  addZigbindDependency(target);
 
   process.stdout.write(
     `✔ created ${name}/\n\n` +
@@ -54,6 +57,27 @@ export async function runNew(argv) {
       `  zigbind build      # produces ${name}.node\n` +
       `  node --test\n`,
   );
+}
+
+/// Add the `zigbind` Zig dependency to the freshly scaffolded project by
+/// running `zig fetch --save` against the sources shipped with the CLI. This
+/// pins zigbind by content hash and removes any reliance on a fixed relative
+/// path. Non-fatal: if Zig isn't available, tell the user how to do it later.
+function addZigbindDependency(target) {
+  let sources;
+  try {
+    sources = resolveZigbindSources();
+    runZig(target, ["fetch", "--save=zigbind", sources], {
+      repairZon: join(target, "build.zig.zon"),
+    });
+    process.stdout.write("✔ added zigbind dependency (zig fetch --save)\n");
+  } catch (err) {
+    process.stderr.write(
+      `warning: could not add the zigbind dependency automatically ` +
+        `(${err.message}).\nRun this inside the project once Zig 0.16.0 is ` +
+        `available:\n  zig fetch --save=zigbind ${sources ?? "<path-to-zigbind/native>"}\n`,
+    );
+  }
 }
 
 /// Recursively copy the template tree, substituting the project name in both

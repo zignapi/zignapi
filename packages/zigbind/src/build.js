@@ -1,14 +1,8 @@
 import { parseArgs } from "node:util";
-import { spawnSync } from "node:child_process";
-import {
-  existsSync,
-  readFileSync,
-  writeFileSync,
-  copyFileSync,
-  readdirSync,
-} from "node:fs";
+import { existsSync, copyFileSync, readdirSync } from "node:fs";
 import { join, basename, extname } from "node:path";
 import process from "node:process";
+import { runZig } from "./zig.js";
 
 const BUILD_HELP = `zigbind build — build the addon in the current directory
 
@@ -45,7 +39,7 @@ export async function runBuild(argv) {
   const zigArgs = ["build"];
   if (values.release) zigArgs.push("-Doptimize=ReleaseFast");
 
-  runZig(cwd, zigArgs);
+  runZig(cwd, zigArgs, { repairZon: join(cwd, "build.zig.zon") });
 
   // Locate the freshly built addon and copy it to ./<name>.node.
   const addon = findAddon(join(cwd, "zig-out"));
@@ -58,48 +52,6 @@ export async function runBuild(argv) {
   const dest = join(cwd, addonName(addon));
   copyFileSync(addon, dest);
   process.stdout.write(`✔ built ${basename(dest)}\n`);
-}
-
-/// Run `zig` with the given args, transparently repairing a missing/invalid
-/// build.zig.zon fingerprint (Zig prints the correct value) and retrying once.
-function runZig(cwd, args) {
-  let res = spawnSync("zig", args, { cwd, encoding: "utf8" });
-
-  if (res.error) {
-    if (res.error.code === "ENOENT") {
-      throw new Error("could not find `zig` on PATH (Zig 0.16.0 is required)");
-    }
-    throw res.error;
-  }
-
-  if (res.status !== 0) {
-    const suggested = (res.stderr ?? "").match(
-      /(?:suggested value|use this value): (0x[0-9a-fA-F]+)/,
-    );
-    if (suggested) {
-      patchFingerprint(join(cwd, "build.zig.zon"), suggested[1]);
-      res = spawnSync("zig", args, { cwd, encoding: "utf8" });
-    }
-  }
-
-  process.stdout.write(res.stdout ?? "");
-  process.stderr.write(res.stderr ?? "");
-  if (res.status !== 0) {
-    throw new Error("zig build failed");
-  }
-}
-
-/// Insert or replace the `.fingerprint` field in a build.zig.zon.
-function patchFingerprint(zonPath, value) {
-  if (!existsSync(zonPath)) return;
-  let src = readFileSync(zonPath, "utf8");
-  if (/\.fingerprint\s*=\s*0x[0-9a-fA-F]+/.test(src)) {
-    src = src.replace(/\.fingerprint\s*=\s*0x[0-9a-fA-F]+/, `.fingerprint = ${value}`);
-  } else {
-    // Insert right after the `.name = ...,` line.
-    src = src.replace(/(\.name\s*=\s*[^\n]*,\n)/, `$1    .fingerprint = ${value},\n`);
-  }
-  writeFileSync(zonPath, src);
 }
 
 /// Find the built addon under zig-out. Prefers an already-named `.node`,
